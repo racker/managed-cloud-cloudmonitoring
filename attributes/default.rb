@@ -20,8 +20,8 @@ default['cloud_monitoring']['rackspace_monitoring_version'] = '0.2.13'
 default['cloud_monitoring']['checks'] = {}
 default['cloud_monitoring']['alarms'] = {}
 default['cloud_monitoring']['rackspace_service_level'] = "core"
-default['cloud_monitoring']['rackspace_username'] = 'hybridint8'
-default['cloud_monitoring']['rackspace_api_key'] = '7c902e8ad45ffdb1a738088a86ab6675'
+default['cloud_monitoring']['rackspace_username'] = ''
+default['cloud_monitoring']['rackspace_api_key'] = ''
 default['cloud_monitoring']['rackspace_auth_region'] = 'us'
 default['cloud_monitoring']['abort_on_failure'] = true
 
