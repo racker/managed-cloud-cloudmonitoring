@@ -8,6 +8,9 @@ module Rackspace
   module CloudMonitoring
 
     def cm
+
+      apikey = new_resource.rackspace_api_key 
+      username = new_resource.rackspace_username 
       @@cm ||= Fog::Monitoring::Rackspace.new(:rackspace_api_key => node['cloud_monitoring']['rackspace_api_key'], :rackspace_username => node['cloud_monitoring']['rackspace_username'],
                                               :raise_errors => node['cloud_monitoring']['abort_on_failure'])
       @@view ||= Hash[@@cm.entities.overview.map {|x| [x.identity, x]}]
@@ -70,6 +73,17 @@ module Rackspace
 
     def get_entity_by_label(label)
       possible = view.select {|key, value| value.label === label}
+      possible = Hash[*possible.flatten(1)]
+
+      if !possible.empty? then
+        possible.values.first
+      else
+        nil
+      end
+    end
+
+    def get_entity_by_ip(ip_addresses)
+      possible = view.select {|key, value| value.ipaddresses === ip_addresses}
       possible = Hash[*possible.flatten(1)]
 
       if !possible.empty? then

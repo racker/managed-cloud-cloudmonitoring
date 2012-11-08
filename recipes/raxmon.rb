@@ -31,7 +31,26 @@ template "/root/.raxrc" do
   )
 end
 
-#Install the raxmon-cli
-python_pip "rackspace-monitoring-cli" do
-  action :upgrade
+case node['platform']
+when "ubuntu","debian"
+
+execute "install_raxmon" do
+      command "pip install rackspace-monitoring-cli"
+      user "root"
+end
+
+when "redhat","centos","fedora"
+
+  major_version = node['platform_version'].split('.').first.to_i
+  if platform_family?('rhel') && major_version < 6
+
+    execute "install_raxmon" do
+      command "pip install rackspace-monitoring-cli"
+      user "root"
+    end
+  else
+    python_pip "rackspace-monitoring-cli" do
+      action :upgrade
+    end
+  end
 end
