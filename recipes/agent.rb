@@ -1,3 +1,22 @@
+#
+# Cookbook Name:: cloudmonitoring
+# Recipe:: agent
+#
+# Copyright 2012, Rackspace
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 cookbook_file "#{Chef::Config[:file_cache_path]}/signing-key.asc" do
   source "signing-key.asc"
   mode 0755
@@ -13,25 +32,11 @@ apt_repository "cloud-monitoring" do
   action :add
 end
 
-# TODO: Enable once we set it up
-# apt_repository "cloud-monitoring-release" do
-#  uri "http://stable.packages.cloudmonitoring.rackspace.com/linux-x86_64-ubuntu-10.04"
-#  distribution "cloudmonitoring"
-#  components ["main"]
-#  key "signing-key.asc"
-#  action :add
-#end
-
-begin
-  values = Chef::EncryptedDataBagItem.load('rackspace', 'cloud')
-
-  node['cloud_monitoring']['agent']['token'] = values['agent_token'] || nil
-rescue Exception => e
-  Chef::Log.error 'Failed to load rackspace cloud data bag: ' + e.to_s
-end
-
-if not node['cloud_monitoring']['agent']['token']
-  raise RuntimeError, "agent_token variable must be set on the node."
+cloudmonitoring_entity "#{node.hostname}" do
+  agent_id            node['cloud_monitoring']['agent']['id']
+  rackspace_username  node['cloud_monitoring']['rackspace_username']
+  rackspace_api_key   node['cloud_monitoring']['rackspace_api_key']
+  action :create
 end
 
 package "rackspace-monitoring-agent" do
@@ -56,19 +61,19 @@ template "/etc/rackspace-monitoring-agent.cfg" do
   )
 end
 
+execute "create_token" do
+   command "TOKEN=`raxmon-agent-tokens-create --label=#{node['cloud_monitoring']['agent']['id']} | awk '{print $4}'` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
+   user "root"
+   only_if do ::File.exists?('/usr/local/bin/raxmon-agent-tokens-create') end 
+end
+
 service "rackspace-monitoring-agent" do
-  # TODO: RHEL, CentOS, ... support
-  supports value_for_platform(
-    "ubuntu" => { "default" => [ :start, :stop, :restart, :status ] },
-    "default" => { "default" => [ :start, :stop ] }
-  )
-
-  case node[:platform]
-    when "ubuntu"
-    if node[:platform_version].to_f >= 9.10
-      provider Chef::Provider::Service::Upstart
-    end
+  case node["platform"]
+  when "centos","redhat","fedora"
+    supports :restart => true, :status => true
+  when "debian","ubuntu"
+    supports :restart => true, :reload => true, :status => true
   end
-
-  action [ :enable, :start ]
+  action [:enable, :start]
+  action [:restart]  
 end

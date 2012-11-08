@@ -8,16 +8,7 @@ module Rackspace
   module CloudMonitoring
 
     def cm
-      begin
-        # Access the Rackspace Cloud encrypted data_bag
-        creds = Chef::EncryptedDataBagItem.load("rackspace", "cloud")
-      rescue Exception => e
-        creds = {'username' => nil, 'apikey' => nil }
-      end
-
-      apikey = new_resource.rackspace_api_key || creds['apikey']
-      username = new_resource.rackspace_username || creds['username']
-      @@cm ||= Fog::Monitoring::Rackspace.new(:rackspace_api_key => apikey, :rackspace_username => username,
+      @@cm ||= Fog::Monitoring::Rackspace.new(:rackspace_api_key => node['cloud_monitoring']['rackspace_api_key'], :rackspace_username => node['cloud_monitoring']['rackspace_username'],
                                               :raise_errors => node['cloud_monitoring']['abort_on_failure'])
       @@view ||= Hash[@@cm.entities.overview.map {|x| [x.identity, x]}]
       @@cm

@@ -16,50 +16,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+if File.exists?("/root/.noupdate")
+  Chef::Log.info "The customer does not want the MC kick or our agents."
+else
 
-case node['platform']
-when "ubuntu","debian"
-  package( "libxslt-dev" ).run_action( :install )
-  package( "libxml2-dev" ).run_action( :install )
-  package( "ruby-dev" ).run_action( :install )
-when "redhat","centos","fedora", "amazon","scientific"
-  package( "libxslt-devel" ).run_action( :install )
-  package( "libxml2-devel" ).run_action( :install )
-end
+  case node['platform']
+  when "ubuntu","debian"
 
-r = gem_package "rackspace-monitoring" do
-  version node['cloud_monitoring']['rackspace_monitoring_version']
-  action :nothing
-end
+  execute "update package index" do
+    command "apt-get update"
+    ignore_failure true
+    action :nothing
+  end.run_action(:run)
 
-r.run_action(:install)
+    package( "libxslt1-dev" ).run_action( :upgrade )
+    package( "libxml2-dev" ).run_action( :upgrade )
+    package( "ruby-dev" ).run_action( :upgrade )
+    package( "build-essential" ).run_action( :upgrade )
+  
+  when "redhat","centos","fedora"
+    include_recipe 'yum::epel'
+    package( "libxslt1-devel" ).run_action( :upgrade )
+    package( "libxml2-devel" ).run_action( :upgrade )  
+  end
 
-require 'rubygems'
-Gem.clear_paths
-require 'rackspace-monitoring'
 
-begin
-  # Access the Rackspace Cloud encrypted data_bag
-  raxcloud = Chef::EncryptedDataBagItem.load("rackspace","cloud")
+  r = gem_package "rackspace-monitoring" do
+    version node['cloud_monitoring']['rackspace_monitoring_version']
+    action :nothing
+  end
 
-  #Create variables for the Rackspace Cloud username and apikey
-  node['cloud_monitoring']['rackspace_username'] = raxcloud['username']
-  node['cloud_monitoring']['rackspace_api_key'] = raxcloud['apikey']
-  node['cloud_monitoring']['rackspace_auth_region'] = raxcloud['region'] || 'notset'
-  node['cloud_monitoring']['rackspace_auth_region'] = node['cloud_monitoring']['rackspace_auth_region'].downcase
+  r.run_action(:install)
+
+  require 'rubygems'
+  Gem.clear_paths
+  require 'rackspace-monitoring'
 
   if node['cloud_monitoring']['rackspace_auth_region'] == 'us'
     node['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
   elsif node['cloud_monitoring']['rackspace_auth_region']  == 'uk'
     node['cloud_monitoring']['rackspace_auth_url'] = 'https://lon.identity.api.rackspacecloud.com/v2.0'
   else
-    Chef::Log.info "Using the encrypted data bag for rackspace cloud but no raxregion attribute was set (or it was set to something other then 'us' or 'uk'). Assuming 'us'. If you have a 'uk' account make sure to set the raxregion in your data bag"
+   Chef::Log.info "Rackspace Monitoring Region: US"
     node['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
   end
-rescue Exception => e
-  Chef::Log.error "Failed to load rackspace cloud data bag: " + e.to_s
-end
 
-if node[:cloud_monitoring][:rackspace_username] == 'your_rackspace_username' || node['cloud_monitoring']['rackspace_api_key'] == 'your_rackspace_api_key'
-  Chef::Log.info "Rackspace username or api key has not been set. For this to work, either set the default attributes or create an encrypted databag of rackspace cloud per the cookbook README"
+  if node[:cloud_monitoring][:rackspace_username] == 'your_rackspace_username' || node['cloud_monitoring']['rackspace_api_key'] == 'your_rackspace_api_key'
+    Chef::Log.info "Username, API Key or Region has not been set."
+  end
+
+  include_recipe "cloudmonitoring::raxmon"
+  include_recipe "cloudmonitoring::agent"
+  include_recipe "cloudmonitoring::checks"
 end

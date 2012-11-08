@@ -19,14 +19,15 @@
 default['cloud_monitoring']['rackspace_monitoring_version'] = '0.2.13'
 default['cloud_monitoring']['checks'] = {}
 default['cloud_monitoring']['alarms'] = {}
-default['cloud_monitoring']['rackspace_username'] = 'your_rackspace_username'
-default['cloud_monitoring']['rackspace_api_key'] = 'your_rackspace_api_key'
+default['cloud_monitoring']['rackspace_service_level'] = "core"
+default['cloud_monitoring']['rackspace_username'] = ''
+default['cloud_monitoring']['rackspace_api_key'] = ''
 default['cloud_monitoring']['rackspace_auth_region'] = 'us'
 default['cloud_monitoring']['abort_on_failure'] = true
 
 default['cloud_monitoring']['agent'] = {}
-default['cloud_monitoring']['agent']['id'] = nil
+default['cloud_monitoring']['agent']['id'] = node.hostname
 default['cloud_monitoring']['agent']['channel'] = nil
 default['cloud_monitoring']['agent']['version'] = 'latest'
-default['cloud_monitoring']['agent']['token'] = nil
+default['cloud_monitoring']['agent']['token'] = 'ChangeMe'
 default['cloud_monitoring']['monitoring_endpoints'] = [] # This should be a list of strings like 'x.x.x.x:port'
