@@ -82,6 +82,17 @@ module Rackspace
       end
     end
 
+    def get_entity_by_ip(ip_addresses)
+      possible = view.select {|key, value| value.ipaddresses === ip_addresses}
+      possible = Hash[*possible.flatten(1)]
+
+      if !possible.empty? then
+        possible.values.first
+      else
+        nil
+      end
+    end
+
     def get_check_by_id(entity_id, id)
       get_child_by_id entity_id, id, 'checks'
     end
