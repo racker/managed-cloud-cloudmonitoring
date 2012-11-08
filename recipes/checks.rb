@@ -17,62 +17,59 @@
 # limitations under the License.
 #
 
-if node['cloud_monitoring']['rackspace_service_level'] == "managed" 
-	cloudmonitoring_check  "Root Filesystem Check" do
-	  target_alias          'default'
-	  type                  'agent.filesystem'
-	  period                30
-	  timeout               10
-	  rackspace_username    node['cloudmonitoring']['rackspace_username']
-	  rackspace_api_key     node['cloudmonitoring']['rackspace_api_key']
-	  action :create
-	end
+#check_creator = File.join(Chef::Config[:file_cache_path], "create_check.sh")
 
-	cloudmonitoring_alarm  "Root File System Alarm" do
-	  check_label           'Root Filesystem Check'
-	  example_id            'agent.managed_low_filesystem_avail'
-	  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
-	  notification_plan_id  'npManaged'
-	  action :create
-	end
+#checkfile = cookbook_file check_creator do
+#	source "create_check.sh"
+#	mode 0755
+#	owner "root"
+#	group "root"
+#	action :nothing
+#end
+#checkfile.run_action(:create)
 
-	cloudmonitoring_check  "Server Load Check" do
-	  target_alias          'default'
-	  type                  'agent.managed_high_load_average'
-	  period                30
-	  timeout               10
-	  rackspace_username    node['cloudmonitoring']['rackspace_username']
-	  rackspace_api_key     node['cloudmonitoring']['rackspace_api_key']
-	  action :create
-	end
+#execute "create_load_check" do
+#  command "#{check_creator} #{node['cloud_monitoring']['entity']}"
+#  user "root"
+#end
 
-	cloudmonitoring_check  "Server Swap Check" do
-	  target_alias          'default'
-	  type                  'agent.managed_low_swap_free'
-	  period                30
-	  timeout               10
-	  rackspace_username    node['cloudmonitoring']['rackspace_username']
-	  rackspace_api_key     node['cloudmonitoring']['rackspace_api_key']
-	  action :create
-	end
 
-else
-	cloudmonitoring_check  "Filesystem Check" do
-	  target_alias          'default'
-	  type                  'agent.filesystem'
-	  details               'target' => '/'
-	  period                30
-	  timeout               10
-	  rackspace_username    node['cloudmonitoring']['rackspace_username']
-	  rackspace_api_key     node['cloudmonitoring']['rackspace_api_key']
-	  action :create
-	end
-
-	cloudmonitoring_alarm  "File System Alarm" do
-	  check_label           'Filesystem Check'
-	  example_id            'agent.filesystem_usage'
-	  example_values		'mount_point' => '/', 'critical_threshold' => "99", 'warning_threshold' => "90"
-	  notification_plan_id  'npTechnicalContactsEmail'
-	  action :create
-	end
+cloudmonitoring_check  "Root Filesystem Check" do
+  target_alias          'default'
+  type                  'agent.filesystem'
+  details               'target' => '/'
+  period                30
+  timeout               10
+  rackspace_username    node['cloud_monitoring']['rackspace_username']
+  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
+  action :create
 end
+
+cloudmonitoring_alarm  "Root File System Alarm" do
+  check_label           'Root Filesystem Check'
+  metadata              "agent.managed_low_filesystem_avail"
+  criteria	           "if (metric['avail'] < 102400) {  return new AlarmStatus(CRITICAL, 'Less than 100MB of available space remains'); } return new AlarmStatus(OK, 'More than 100MB of space is available');"
+  notification_plan_id  node['cloud_monitoring']['notification_plan']
+  action :create
+end
+
+cloudmonitoring_check  "Server Load Check" do
+  target_alias          'default'
+  type                  'agent.load_average'
+  period                30
+  timeout               10
+  rackspace_username    node['cloud_monitoring']['rackspace_username']
+  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
+  action :create
+end
+
+cloudmonitoring_check  "Server Swap Check" do
+  target_alias          'default'
+  type                  'agent.memory'
+  period                30
+  timeout               10
+  rackspace_username    node['cloud_monitoring']['rackspace_username']
+  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
+  action :create
+end
+
