@@ -17,33 +17,6 @@
 # limitations under the License.
 #
 
-# Install the Rackspace Monitoring Repos
-case node[:platform]
-when "redhat","centos"
-  include_recipe "yum"
-
-  yum_repository "rackspace-monitoring" do
-    description "Rackspace Monitoring Agent Repo"
-    url "http://unstable.packages.cloudmonitoring.rackspace.com/redhat-6.1-x86_64/"
-    key "RPM-GPG-KEY-raxmon"
-    action :add
-   end
-
-   yum_key "RPM-GPG-KEY-raxmon" do
-      url "http://unstable.packages.cloudmonitoring.rackspace.com/signing-key.asc"
-      action :add
-  end
-
-when "ubuntu"
-  include_recipe "apt"
-
-  apt_repository "rackspace-monitoring" do
-    uri "[arch=amd64] http://unstable.packages.cloudmonitoring.rackspace.com/ubuntu-10.04-x86_64"
-    distribution "cloudmonitoring"
-    components ["main"]
-    key "signing-key.asc"
-  end
-end
 
 #Pull entity id from list of active identities
 cloudmonitoring_entity "#{node.hostname}" do

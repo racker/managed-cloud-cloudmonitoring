@@ -21,6 +21,54 @@ if File.exists?("/root/.noupdate")
   Chef::Log.info "The customer does not want the monitoring agent."
 else
 
+  case node[:platform]
+when "redhat","centos"
+  repo = cookbook_file "/etc/yum.repos.d/raxmon.repo" do
+    source "raxmon.repo"
+    action :nothing
+    not_if do File.exist?("/etc/yum.repos.d/raxmon.repo") end
+  end
+  repo.run_action(:create)
+
+  execute "yum -q makecache"
+  ruby_block "reload-internal-yum-cache" do
+    block do
+      Chef::Provider::Package::Yum::YumCache.instance.reload
+    end
+  end
+when "ubuntu"
+  keyfile = cookbook_file "/tmp/signing-key.asc" do
+    source "signing-key.asc"
+    action :nothing
+    not_if do File.exist?("/tmp/signing-key.asc") end
+  end
+  keyfile.run_action(:create)
+
+  aptkey = execute "apt-key add /tmp/signing-key.asc" do
+    not_if "apt-key list | grep Rackspace"
+    action :nothing
+  end
+  aptkey.run_action(:run)
+
+  list = cookbook_file "/etc/apt/sources.list.d/raxmon.list" do
+    source "raxmon.list"
+    action :nothing
+    not_if do File.exist?("/etc/apt/sources.list.d/raxmon.list") end
+  end
+  list.run_action(:create)
+
+  apt = execute "update apt" do
+    command "apt-get update"
+    ignore_failure true
+    action :nothing
+  end
+  begin
+    apt.run_action(:run)
+  rescue
+    Chef::Log.warn("apt-get exited with non-0")
+  end
+end
+
 #Install all our pre-reqs
 case node['platform']
 when "ubuntu","debian"
