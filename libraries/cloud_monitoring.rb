@@ -82,8 +82,8 @@ module Rackspace
       end
     end
 
-    def get_entity_by_ip(ip_addresses)
-      possible = view.select {|key, value| value.ipaddresses === ip_addresses}
+    def get_entity_by_ip(ip_address)
+      possible = view.select {|key, value| value.ip_addresses.has_value?(ip_address) }
       possible = Hash[*possible.flatten(1)]
 
       if !possible.empty? then
