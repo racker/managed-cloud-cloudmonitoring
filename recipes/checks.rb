@@ -47,7 +47,7 @@ end
 
 cloudmonitoring_alarm  "Root File System Alarm" do
   check_label           'Root Filesystem Check'
-  metadata              "agent.managed_low_filesystem_avail"
+  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
   criteria	           "if (metric['avail'] < 102400) {  return new AlarmStatus(CRITICAL, 'Less than 100MB of available space remains'); } return new AlarmStatus(OK, 'More than 100MB of space is available');"
   notification_plan_id  node['cloud_monitoring']['notification_plan']
   action :create
