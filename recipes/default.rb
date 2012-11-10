@@ -26,7 +26,6 @@ when "redhat","centos"
   repo = cookbook_file "/etc/yum.repos.d/raxmon.repo" do
     source "raxmon.repo"
     action :nothing
-    not_if do File.exist?("/etc/yum.repos.d/raxmon.repo") end
   end
   repo.run_action(:create)
 
@@ -40,12 +39,10 @@ when "ubuntu"
   keyfile = cookbook_file "/tmp/signing-key.asc" do
     source "signing-key.asc"
     action :nothing
-    not_if do File.exist?("/tmp/signing-key.asc") end
   end
   keyfile.run_action(:create)
 
   aptkey = execute "apt-key add /tmp/signing-key.asc" do
-    not_if "apt-key list | grep Rackspace"
     action :nothing
   end
   aptkey.run_action(:run)
@@ -53,7 +50,6 @@ when "ubuntu"
   list = cookbook_file "/etc/apt/sources.list.d/raxmon.list" do
     source "raxmon.list"
     action :nothing
-    not_if do File.exist?("/etc/apt/sources.list.d/raxmon.list") end
   end
   list.run_action(:create)
 
