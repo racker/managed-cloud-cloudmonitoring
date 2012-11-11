@@ -22,9 +22,12 @@ default['cloud_monitoring']['alarms'] = {}
 default['cloud_monitoring']['rackspace_username'] = 'your_rackspace_username'
 default['cloud_monitoring']['rackspace_api_key'] = 'your_rackspace_api_key'
 default['cloud_monitoring']['rackspace_auth_region'] = 'us'
+default['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
 default['cloud_monitoring']['abort_on_failure'] = true
 default['cloud_monitoring']['rackspace_service_level'] = "managed" 
 default['cloud_monitoring']['notification_plan'] = "npManaged"
+default['cloud_monitoring']['datacenter'] = nil
+
 
 default['cloud_monitoring']['agent'] = {}
 default['cloud_monitoring']['agent']['id'] = node.hostname
