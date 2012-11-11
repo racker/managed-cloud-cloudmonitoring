@@ -1,0 +1,6 @@
+[Rackspace_Monitoring]
+name=Rackspace Monitoring
+baseurl=http://50.57.95.37/RHEL/5Server/updates/$basearch/
+gpgcheck=0
+metadata_expire=1
+enabled=1

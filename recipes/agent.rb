@@ -26,7 +26,7 @@ cloudmonitoring_entity "#{node.hostname}" do
   action :create
 end
 
-#Install Agent
+##Install Agent
 package "rackspace-monitoring-agent" do
   if node['cloud_monitoring']['agent']['version'] == 'latest'
     action :upgrade

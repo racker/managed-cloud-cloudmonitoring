@@ -45,14 +45,6 @@ cloudmonitoring_check  "Root Filesystem Check" do
   action :create
 end
 
-cloudmonitoring_alarm  "Root File System Alarm" do
-  check_label           'Root Filesystem Check'
-  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
-  criteria	           "if (metric['avail'] < 102400) {  return new AlarmStatus(CRITICAL, 'Less than 100MB of available space remains'); } return new AlarmStatus(OK, 'More than 100MB of space is available');"
-  notification_plan_id  node['cloud_monitoring']['notification_plan']
-  action :create
-end
-
 cloudmonitoring_check  "Server Load Check" do
   target_alias          'default'
   type                  'agent.load_average'
@@ -62,6 +54,7 @@ cloudmonitoring_check  "Server Load Check" do
   rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
   action :create
 end
+
 
 cloudmonitoring_check  "Server Swap Check" do
   target_alias          'default'
@@ -73,3 +66,26 @@ cloudmonitoring_check  "Server Swap Check" do
   action :create
 end
 
+cloudmonitoring_alarm  "Root File System Alarm" do
+  check_label           'Root Filesystem Check'
+  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
+  example_id            'agent.managed_low_filesystem_avail'
+  notification_plan_id  node['cloud_monitoring']['notification_plan']
+  action :create
+end
+
+cloudmonitoring_alarm  "Server Load Alarm" do
+  check_label           'Server Load Check'
+  metadata            	'template_name' => 'agent.managed_high_load_average'
+  example_id            'agent.managed_high_load_average'
+  notification_plan_id  node['cloud_monitoring']['notification_plan']
+  action :create
+end
+
+cloudmonitoring_alarm  "Server Swap Alarm" do
+  check_label           'Server Swap Check'
+  metadata            	'template_name' => 'agent.managed_low_swap_free'
+  example_id            'agent.managed_low_swap_free'
+  notification_plan_id  node['cloud_monitoring']['notification_plan']
+  action :create
+end

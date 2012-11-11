@@ -23,11 +23,20 @@ else
 
   case node[:platform]
 when "redhat","centos"
-  repo = cookbook_file "/etc/yum.repos.d/raxmon.repo" do
+
+   cookbook_file "/etc/yum.repos.d/raxmon.repo" do
     source "raxmon.repo"
-    action :nothing
-  end
-  repo.run_action(:create)
+    action :create
+   end
+
+   major_version = node['platform_version'].split('.').first.to_i
+   if platform_family?('rhel') && major_version < 6
+
+      cookbook_file "/etc/yum.repos.d/raxmon.repo" do
+         source "raxmon5.repo"
+         action :create
+      end
+   end
 
   execute "yum -q makecache"
   ruby_block "reload-internal-yum-cache" do
@@ -80,13 +89,14 @@ when "redhat","centos","fedora", "amazon","scientific"
 
   major_version = node['platform_version'].split('.').first.to_i
   if platform_family?('rhel') && major_version < 6
-  package( "python-setuptools" ).run_action( :install )
-  package( "python26-devel" ).run_action( :install )
-
-    execute "install_pip26" do
-        command "easy_install-2.6 pip"
-        user "root"
-    end
+   package( "python-setuptools" ).run_action( :install )
+   package( "python26-devel" ).run_action( :install )
+   package( "python26-distribute" ).run_action( :install )
+   
+   execute "install_pip2.6" do
+      command "easy_install-2.6 pip" 
+      action :run
+   end
   end
 end
 
