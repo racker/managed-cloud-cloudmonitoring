@@ -39,11 +39,11 @@ package "rackspace-monitoring-agent" do
 end
 
 #TODO: Not returning the agent token
-#cloudmonitoring_agent_token "#{node.hostname}" do
-#  rackspace_username  node['cloud_monitoring']['rackspace_username']
-#  rackspace_api_key   node['cloud_monitoring']['rackspace_api_key']
-#  action :create
-#end
+cloudmonitoring_agent_token "#{node.hostname}" do
+  rackspace_username  node['cloud_monitoring']['rackspace_username']
+  rackspace_api_key   node['cloud_monitoring']['rackspace_api_key']
+  action :create
+end
 
 #Place Agent config file 
 template "/etc/rackspace-monitoring-agent.cfg" do
@@ -58,10 +58,10 @@ template "/etc/rackspace-monitoring-agent.cfg" do
 end
 
 #TODO - BANDAID for the agent_token not returning an id
-execute "create_token" do
-   command "TOKEN=`raxmon-agent-tokens-create --label=#{node['cloud_monitoring']['agent']['id']} | awk '{print $4}'` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
-   user "root"
-end
+#execute "create_token" do
+#   command "TOKEN=`raxmon-agent-tokens-create --label=#{node['cloud_monitoring']['agent']['id']} | awk '{print $4}'` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
+#   user "root"
+#end
 
 #Set to start on boot
 service "rackspace-monitoring-agent" do
