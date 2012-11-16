@@ -18,47 +18,6 @@
 #
 include_recipe "python"
 
-#Install all our pre-reqs
-case node['platform']
-when "ubuntu","debian"
-  package( "libxslt-dev" ).run_action( :install )
-  package( "libxml2-dev" ).run_action( :install )
-  package( "ruby-dev" ).run_action( :install )
-  package( "rubygems" ).run_action( :install )
-
-when "redhat","centos","fedora", "amazon","scientific"
-  package( "libxslt-devel" ).run_action( :install )
-  package( "libxml2-devel" ).run_action( :install )
-  package( "ruby-devel" ).run_action( :install )
-  package( "rubygems" ).run_action( :install )
-
-  major_version = node['platform_version'].split('.').first.to_i
-  if platform_family?('rhel') && major_version < 6
-   package( "python-setuptools" ).run_action( :install )
-   package( "python26-devel" ).run_action( :install )
-   package( "python26-distribute" ).run_action( :install )
-   
-   execute "install_pip2.6" do
-      command "easy_install-2.6 pip" 
-      action :run
-   end
-  end
-end
-
-#Install ruby gems into Chef ruby env
-chef_gem "rackspace-fog" do
-  action :install
-end
-
-chef_gem"rackspace-monitoring" do
-  version node['cloud_monitoring']['rackspace_monitoring_version']
-  action :install
-end
-
-require 'rubygems'
-Gem.clear_paths
-require 'rackspace-monitoring'
-require 'rackspace-fog'
 
 #Create the .raxrc with credentials in /root
 template "/root/.raxrc" do
@@ -84,13 +43,7 @@ end
 when "redhat","centos","fedora"
 
   major_version = node['platform_version'].split('.').first.to_i
-  if platform_family?('rhel') && major_version < 6
-
-    execute "install_raxmon" do
-      command "pip install rackspace-monitoring-cli"
-      user "root"
-    end
-  else
+  if not platform_family?('rhel') && major_version < 6
     python_pip "rackspace-monitoring-cli" do
       action :upgrade
     end

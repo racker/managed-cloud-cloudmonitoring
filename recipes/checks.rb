@@ -34,7 +34,7 @@
 #end
 
 
-cloudmonitoring_check  "Root Filesystem Check" do
+cloudmonitoring_check  "Filesystem Check" do
   target_alias          'default'
   type                  'agent.filesystem'
   details               'target' => '/'
@@ -66,8 +66,8 @@ cloudmonitoring_check  "Server Swap Check" do
   action :create
 end
 
-cloudmonitoring_alarm  "Root File System Alarm" do
-  check_label           'Root Filesystem Check'
+cloudmonitoring_alarm  "File System Alarm" do
+  check_label           'Filesystem Check'
   metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
   example_id            'agent.managed_low_filesystem_avail'
   notification_plan_id  node['cloud_monitoring']['notification_plan']

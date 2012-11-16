@@ -38,10 +38,11 @@ package "rackspace-monitoring-agent" do
   notifies :restart, "service[rackspace-monitoring-agent]"
 end
 
-#TODO: Not returning the agent token
-cloudmonitoring_agent_token "#{node.hostname}" do
-  rackspace_username  node['cloud_monitoring']['rackspace_username']
-  rackspace_api_key   node['cloud_monitoring']['rackspace_api_key']
+cookbook_file "/var/chef/cache/create_agent_token24.py" do
+  source "create_agent_token24.py"
+  owner "root"
+  group "root"
+  mode "0777"
   action :create
 end
 
@@ -57,11 +58,11 @@ template "/etc/rackspace-monitoring-agent.cfg" do
   )
 end
 
-#TODO - BANDAID for the agent_token not returning an id
-#execute "create_token" do
-#   command "TOKEN=`raxmon-agent-tokens-create --label=#{node['cloud_monitoring']['agent']['id']} | awk '{print $4}'` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
-#   user "root"
-#end
+#Create an agent token and place it in the config file
+execute "create_token" do
+  command "TOKEN=`python /var/chef/cache/create_agent_token24.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']}` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
+  user "root"
+end
 
 #Set to start on boot
 service "rackspace-monitoring-agent" do

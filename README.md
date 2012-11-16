@@ -15,6 +15,17 @@ The raxmon-cli recipe in this cookbook is not automatically added by default.  T
 
 # Requirements
 
+## Supported OS (Rackspace Managed Cloud)
+
+* RHEL 5.5
+* RHEL 6.1
+* CentOS 5.6
+* CentOS 6.3
+* Ubuntu 10.04
+* Ubuntu 11.04
+* Ubuntu 11.10
+* Ubuntu 12.04
+
 Requires Chef 0.7.10 or higher for Lightweight Resource and Provider support. Chef 0.8+ is recommended. While this
 cookbook can be used in chef-solo mode, to gain the most flexibility, we recommend using chef-client with a Chef Server.
 
