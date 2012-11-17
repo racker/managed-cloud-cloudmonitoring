@@ -16,8 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-include_recipe "python"
-
 
 #Create the .raxrc with credentials in /root
 template "/root/.raxrc" do
@@ -44,8 +42,9 @@ when "redhat","centos","fedora"
 
   major_version = node['platform_version'].split('.').first.to_i
   if not platform_family?('rhel') && major_version < 6
-    python_pip "rackspace-monitoring-cli" do
-      action :upgrade
+    execute "install_raxmon" do
+          command "pip install rackspace-monitoring-cli"
+          user "root"
     end
   end
 end
