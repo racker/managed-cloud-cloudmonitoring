@@ -17,23 +17,6 @@
 # limitations under the License.
 #
 
-#check_creator = File.join(Chef::Config[:file_cache_path], "create_check.sh")
-
-#checkfile = cookbook_file check_creator do
-#	source "create_check.sh"
-#	mode 0755
-#	owner "root"
-#	group "root"
-#	action :nothing
-#end
-#checkfile.run_action(:create)
-
-#execute "create_load_check" do
-#  command "#{check_creator} #{node['cloud_monitoring']['entity']}"
-#  user "root"
-#end
-
-
 cloudmonitoring_check  "Filesystem Check" do
   target_alias          'default'
   type                  'agent.filesystem'
@@ -45,47 +28,47 @@ cloudmonitoring_check  "Filesystem Check" do
   action :create
 end
 
-cloudmonitoring_check  "Server Load Check" do
-  target_alias          'default'
-  type                  'agent.load_average'
-  period                30
-  timeout               10
-  rackspace_username    node['cloud_monitoring']['rackspace_username']
-  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
-  action :create
-end
+#cloudmonitoring_check  "Server Load Check" do
+#  target_alias          'default'
+#  type                  'agent.load_average'
+#  period                30
+#  timeout               10
+#  rackspace_username    node['cloud_monitoring']['rackspace_username']
+#  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
+#  action :create
+#end
 
 
-cloudmonitoring_check  "Server Swap Check" do
-  target_alias          'default'
-  type                  'agent.memory'
-  period                30
-  timeout               10
-  rackspace_username    node['cloud_monitoring']['rackspace_username']
-  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
-  action :create
-end
+#cloudmonitoring_check  "Server Swap Check" do
+#  target_alias          'default'
+#  type                  'agent.memory'
+#  period                30
+#  timeout               10
+#  rackspace_username    node['cloud_monitoring']['rackspace_username']
+#  rackspace_api_key     node['cloud_monitoring']['rackspace_api_key']
+#  action :create
+#end
 
-cloudmonitoring_alarm  "File System Alarm" do
-  check_label           'Filesystem Check'
-  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
-  example_id            'agent.managed_low_filesystem_avail'
-  notification_plan_id  node['cloud_monitoring']['notification_plan']
-  action :create
-end
+#cloudmonitoring_alarm  "File System Alarm" do
+#  check_label           'Filesystem Check'
+#  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
+#  example_id            'agent.managed_low_filesystem_avail'
+#  notification_plan_id  node['cloud_monitoring']['notification_plan']
+#  action :create
+#end
 
-cloudmonitoring_alarm  "Server Load Alarm" do
-  check_label           'Server Load Check'
-  metadata            	'template_name' => 'agent.managed_high_load_average'
-  example_id            'agent.managed_high_load_average'
-  notification_plan_id  node['cloud_monitoring']['notification_plan']
-  action :create
-end
+#cloudmonitoring_alarm  "Server Load Alarm" do
+#  check_label           'Server Load Check'
+#  metadata            	'template_name' => 'agent.managed_high_load_average'
+#  example_id            'agent.managed_high_load_average'
+#  notification_plan_id  node['cloud_monitoring']['notification_plan']
+#  action :create
+#end
 
-cloudmonitoring_alarm  "Server Swap Alarm" do
-  check_label           'Server Swap Check'
-  metadata            	'template_name' => 'agent.managed_low_swap_free'
-  example_id            'agent.managed_low_swap_free'
-  notification_plan_id  node['cloud_monitoring']['notification_plan']
-  action :create
-end
+#cloudmonitoring_alarm  "Server Swap Alarm" do
+#  check_label           'Server Swap Check'
+#  metadata            	'template_name' => 'agent.managed_low_swap_free'
+#  example_id            'agent.managed_low_swap_free'
+#  notification_plan_id  node['cloud_monitoring']['notification_plan']
+#  action :create
+#end
