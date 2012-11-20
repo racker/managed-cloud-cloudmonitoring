@@ -1,0 +1,6 @@
+[raxmon]
+name=Rackspace Monitoring Repo
+baseurl=http://stable.packages.cloudmonitoring.rackspace.com/centos-$releasever-$basearch
+gpgcheck=0
+metadata_expire=1
+enabled=1

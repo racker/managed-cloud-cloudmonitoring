@@ -26,6 +26,8 @@ default['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.racksp
 default['cloud_monitoring']['abort_on_failure'] = true
 default['cloud_monitoring']['rackspace_service_level'] = "managed" 
 default['cloud_monitoring']['notification_plan'] = "npManaged"
+default['cloud_monitoring']['osver'] = nil
+default['cloud_monitoring']['osarch'] = nil
 default['cloud_monitoring']['datacenter'] = nil
 
 

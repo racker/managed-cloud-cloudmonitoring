@@ -22,20 +22,38 @@ if File.exists?("/root/.noupdate")
 else
 
   case node[:platform]
-when "redhat","centos"
+when "redhat"
+
+   cookbook_file "/etc/pki/rpm-gpg/signing-key.asc" do
+      source "signing-key.asc"
+      action :create
+   end
+
 
    cookbook_file "/etc/yum.repos.d/raxmon.repo" do
-    source "raxmon.repo"
+    source "rhel-raxmon.repo"
     action :create
    end
 
    major_version = node['platform_version'].split('.').first.to_i
    if platform_family?('rhel') && major_version < 6
 
+   cookbook_file "/etc/pki/rpm-gpg/signing-key-rhel5.asc" do
+      source "signing-key-rhel5.asc"
+      action :create
+   end
+
       cookbook_file "/etc/yum.repos.d/raxmon.repo" do
-         source "raxmon5.repo"
+         source "rhel-raxmon-5.repo"
          action :create
       end
+   end
+
+   when "centos"
+
+   cookbook_file "/etc/yum.repos.d/raxmon.repo" do
+    source "centos-raxmon.repo"
+    action :create
    end
 
   execute "yum -q makecache"
@@ -45,33 +63,22 @@ when "redhat","centos"
     end
   end
 when "ubuntu"
-  keyfile = cookbook_file "/tmp/signing-key.asc" do
-    source "signing-key.asc"
-    action :nothing
-  end
-  keyfile.run_action(:create)
 
-  aptkey = execute "apt-key add /tmp/signing-key.asc" do
-    action :nothing
-  end
-  aptkey.run_action(:run)
+   cookbook_file "/tmp/signing-key.asc" do
+      source "signing-key.asc"
+      action :nothing
+   end
 
-  list = cookbook_file "/etc/apt/sources.list.d/raxmon.list" do
-    source "raxmon.list"
-    action :nothing
-  end
-  list.run_action(:create)
-
-  apt = execute "update apt" do
-    command "apt-get update"
-    ignore_failure true
-    action :nothing
-  end
-  begin
-    apt.run_action(:run)
-  rescue
-    Chef::Log.warn("apt-get exited with non-0")
-  end
+   execute "apt-get update" do
+      action :nothing
+   end
+ 
+   template "/etc/apt/sources.list.d/racmon.list" do
+      owner "root"
+      mode "0644"
+      source "raxmon.list.erb"
+      notifies :run, resources("execute[apt-get update]"), :immediately
+   end
 end
 
 
