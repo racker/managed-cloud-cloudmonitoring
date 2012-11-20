@@ -49,13 +49,13 @@ end
 #  action :create
 #end
 
-#cloudmonitoring_alarm  "File System Alarm" do
-#  check_label           'Filesystem Check'
-#  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
-#  example_id            'agent.managed_low_filesystem_avail'
-#  notification_plan_id  node['cloud_monitoring']['notification_plan']
-#  action :create
-#end
+cloudmonitoring_alarm  "File System Alarm" do
+  check_label           'Filesystem Check'
+  metadata            	'template_name' => 'agent.managed_low_filesystem_avail'
+  example_id            'agent.managed_low_filesystem_avail'
+  notification_plan_id  node['cloud_monitoring']['notification_plan']
+  action :create
+end
 
 #cloudmonitoring_alarm  "Server Load Alarm" do
 #  check_label           'Server Load Check'
