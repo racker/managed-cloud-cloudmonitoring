@@ -66,7 +66,7 @@ when "ubuntu"
 
    cookbook_file "/tmp/signing-key.asc" do
       source "signing-key.asc"
-      action :nothing
+      action :create
    end
 
    execute "apt-get update" do

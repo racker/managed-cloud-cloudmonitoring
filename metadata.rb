@@ -6,5 +6,4 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          "0.1.4"
 
 
-# TODO: Add correct apt / yum repo, etc. once available
-depends "rackspace"
+
