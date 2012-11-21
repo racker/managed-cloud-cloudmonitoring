@@ -15,7 +15,7 @@ The raxmon-cli recipe in this cookbook is not automatically added by default.  T
 
 To run this recipe manually from a managed cloud server use the following command:
 
-# ./mgc.sh --recipe "cloudmonitoring" --json '"cloud_monitoring" : { "bootstrapfile" : "/etc/raxmon/bootstrap.json", "rackspace_username" : "cloudusername", "rackspace_api_key" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}' --force
+$ ./mgc.sh --recipe "cloudmonitoring" --json '"cloud_monitoring" : { "bootstrapfile" : "/etc/raxmon/bootstrap.json", "rackspace_username" : "cloudusername", "rackspace_api_key" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}' --force
 
 # Requirements
 
