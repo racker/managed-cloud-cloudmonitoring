@@ -14,9 +14,9 @@ The cookbook also installs the python-pip package in Debian and RedHat based sys
 The raxmon-cli recipe in this cookbook is not automatically added by default.  To install raxmon-cli, add the cloud_monitoring::raxmon recipe to the run_list. 
 
 To run this recipe manually from a managed cloud server use the following command:
-```
-./mgc.sh --recipe "cloudmonitoring" --json '"cloud_monitoring" : { "bootstrapfile" : "/etc/raxmon/bootstrap.json", "rackspace_username" : "cloudusername", "rackspace_api_key" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}' --force
-```
+
+# ./mgc.sh --recipe "cloudmonitoring" --json '"cloud_monitoring" : { "bootstrapfile" : "/etc/raxmon/bootstrap.json", "rackspace_username" : "cloudusername", "rackspace_api_key" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}' --force
+
 # Requirements
 
 ## Supported OS (Rackspace Managed Cloud)
