@@ -28,13 +28,7 @@ end
 
 ##Install Agent
 package "rackspace-monitoring-agent" do
-  if node['cloud_monitoring']['agent']['version'] == 'latest'
-    action :upgrade
-  else
-    version node['cloud_monitoring']['agent']['version']
-    action :install
-  end
-
+  action :upgrade
   notifies :restart, "service[rackspace-monitoring-agent]"
 end
 

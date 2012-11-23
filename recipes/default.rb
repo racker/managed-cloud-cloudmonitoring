@@ -69,6 +69,10 @@ when "ubuntu"
       action :create
    end
 
+  execute "apt-key add /tmp/signing-key.asc" do
+    not_if "apt-key list | grep monitoring@rackspace.com"
+  end
+
    execute "apt-get update" do
       action :nothing
    end
