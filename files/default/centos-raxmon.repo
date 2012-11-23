@@ -1,4 +1,4 @@
-[raxmon]
+[centos-raxmon]
 name=Rackspace Monitoring Repo
 baseurl=http://stable.packages.cloudmonitoring.rackspace.com/centos-$releasever-x86_64
 gpgcheck=0

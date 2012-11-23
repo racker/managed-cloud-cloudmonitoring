@@ -1,4 +1,4 @@
-[rackspace-monitoring]
+[rhel-raxmon6]
 name=Rackspace Monitoring
 baseurl=http://stable.packages.cloudmonitoring.rackspace.com/redhat-6-x86_64
 gpgcheck=1

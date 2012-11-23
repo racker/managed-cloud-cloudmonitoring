@@ -118,20 +118,25 @@ Gem.clear_paths
 require 'rackspace-monitoring'
 require 'rackspace-fog'
 
-
-node.set['cloud_monitoring']['datacenter'] = File.open('/etc/rackspace/datacenter') {|f| f.readline}
-Chef::Log.info "Datacenter: #{node['cloud_monitoring']['datacenter']}"
+if File.exists?('/etc/rackspace/datacenter') and File.readable?('/etc/rackspace/datacenter')
+dc = File.open('/etc/rackspace/datacenter') {|f| f.readline}
+node['cloud_monitoring']['datacenter'] = dc.strip
+Chef::Log.info "Datacenter is: #{node['cloud_monitoring']['datacenter']}"
 
 case node['cloud_monitoring']['datacenter']
    when "SAT1", "SAT2", "IAD1", "IAD2", "DFW1", "ORD1"
-      node.set['cloud_monitoring']['rackspace_auth_region'] == 'us'
+      node.set['cloud_monitoring']['rackspace_auth_region'] = 'us'
       node.set['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
+      node.set['cloud_monitoring']['rackspace_rb_auth_url'] = 'identity.api.rackspacecloud.com'
+      Chef::Log.info "Setting region to: #{node['cloud_monitoring']['rackspace_auth_region']}"
 
    when "LON3" 
-      node.set['cloud_monitoring']['rackspace_auth_region']  == 'uk'
+      node.set['cloud_monitoring']['rackspace_auth_region']  = 'uk'
       node.set['cloud_monitoring']['rackspace_auth_url'] = 'https://lon.identity.api.rackspacecloud.com/v2.0'
+      node.set['cloud_monitoring']['rackspace_rb_auth_url'] = 'lon.identity.api.rackspacecloud.com'
+      Chef::Log.info "Setting region to: #{node['cloud_monitoring']['rackspace_auth_region']}"
    end
-
+end
   #Calling the other recipes needed for a full install. This could be moved to a role or run_list. 
   include_recipe "cloudmonitoring::agent"
   include_recipe "cloudmonitoring::checks"
