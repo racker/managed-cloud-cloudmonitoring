@@ -51,6 +51,11 @@ when "redhat"
 
    when "centos"
 
+   cookbook_file "/etc/pki/rpm-gpg/signing-key.asc" do
+      source "signing-key.asc"
+      action :create
+   end
+
    cookbook_file "/etc/yum.repos.d/raxmon.repo" do
     source "centos-raxmon.repo"
     action :create
