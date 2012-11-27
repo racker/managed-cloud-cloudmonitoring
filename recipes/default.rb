@@ -22,73 +22,64 @@ if File.exists?("/root/.noupdate")
 else
 
   case node[:platform]
-when "redhat"
+  when "redhat", "centos"
 
-   cookbook_file "/etc/pki/rpm-gpg/signing-key.asc" do
-      source "signing-key.asc"
-      action :create
-   end
+    major_version = node['platform_version'].split('.').first.to_i
+    if major_version < 6
 
-
-   cookbook_file "/etc/yum.repos.d/raxmon.repo" do
-    source "rhel-raxmon.repo"
-    action :create
-   end
-
-   major_version = node['platform_version'].split('.').first.to_i
-   if platform_family?('rhel') && major_version < 6
-
-   cookbook_file "/etc/pki/rpm-gpg/signing-key-rhel5.asc" do
-      source "signing-key-rhel5.asc"
-      action :create
-   end
+      cookbook_file "/etc/pki/rpm-gpg/signing-key-rhel5.asc" do
+        source "signing-key-rhel5.asc"
+        action :create
+      end
 
       cookbook_file "/etc/yum.repos.d/raxmon.repo" do
-         source "rhel-raxmon-5.repo"
-         action :create
+        source "rhel-raxmon-5.repo"
+        action :create
       end
-   end
 
-   when "centos"
+    else
 
-   cookbook_file "/etc/pki/rpm-gpg/signing-key.asc" do
-      source "signing-key.asc"
-      action :create
-   end
+      cookbook_file "/etc/pki/rpm-gpg/signing-key.asc" do
+        source "signing-key.asc"
+        action :create
+      end
 
-   cookbook_file "/etc/yum.repos.d/raxmon.repo" do
-    source "centos-raxmon.repo"
-    action :create
-   end
+      cookbook_file "/etc/yum.repos.d/raxmon.repo" do
+        source "rhel-raxmon.repo"
+        action :create
+      end
 
-  execute "yum -q makecache"
-  ruby_block "reload-internal-yum-cache" do
-    block do
-      Chef::Provider::Package::Yum::YumCache.instance.reload
     end
-  end
-when "ubuntu"
 
-   cookbook_file "/tmp/signing-key.asc" do
+    execute "yum -q makecache"
+    ruby_block "reload-internal-yum-cache" do
+      block do
+        Chef::Provider::Package::Yum::YumCache.instance.reload
+      end
+    end
+
+  when "ubuntu"
+
+    cookbook_file "/tmp/signing-key.asc" do
       source "signing-key.asc"
       action :create
-   end
+    end
 
-  execute "apt-key add /tmp/signing-key.asc" do
-    not_if "apt-key list | grep monitoring@rackspace.com"
-  end
+    execute "apt-key add /tmp/signing-key.asc" do
+      not_if "apt-key list | grep monitoring@rackspace.com"
+    end
 
-   execute "apt-get update" do
+    execute "apt-get update" do
       action :nothing
-   end
- 
-   template "/etc/apt/sources.list.d/racmon.list" do
+    end
+
+    template "/etc/apt/sources.list.d/racmon.list" do
       owner "root"
       mode "0644"
       source "raxmon.list.erb"
       notifies :run, resources("execute[apt-get update]"), :immediately
-   end
-end
+    end
+  end
 
 
 #Install all our pre-reqs
