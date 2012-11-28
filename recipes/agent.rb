@@ -18,12 +18,18 @@
 #
 
 
-#Pull entity id from list of active identities
-cloudmonitoring_entity "#{node.hostname}" do
-  agent_id            node['cloud_monitoring']['agent']['id']
-  rackspace_username  node['cloud_monitoring']['rackspace_username']
-  rackspace_api_key   node['cloud_monitoring']['rackspace_api_key']
+cookbook_file "/var/chef/cache/get_entity.py" do
+  source "get_entity.py"
+  owner "root"
+  group "root"
+  mode "0777"
   action :create
+end
+
+#Get the entity for this server based on IP address and set the agent_id to the hostname
+execute "get_entity" do
+  command "python /var/chef/cache/get_entity.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']} -i #{node.ipaddress}"      
+  user "root"
 end
 
 ##Install Agent
@@ -68,4 +74,18 @@ service "rackspace-monitoring-agent" do
   end
   action [:enable, :start]
   action [:restart]  
+end
+
+cookbook_file "/var/chef/cache/create_check.py" do
+  source "create_check.py"
+  owner "root"
+  group "root"
+  mode "0777"
+  action :create
+end
+
+#Create Filesystem Check and Alarm
+execute "create_check" do
+  command "python /var/chef/cache/create_check.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']} -i #{node.ipaddress}"      
+  user "root"
 end
