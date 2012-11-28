@@ -86,6 +86,6 @@ end
 
 #Create Filesystem Check and Alarm
 execute "create_check" do
-  command "python /var/chef/cache/create_check.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']} -i #{node.ipaddress}"      
+  command "python /var/chef/cache/create_check.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']} -i #{node.ipaddress} -p #{node['cloud_monitoring']['agent']['filesystem_period']} -t #{node['cloud_monitoring']['agent']['filesystem_timeout']}"      
   user "root"
 end
