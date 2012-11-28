@@ -42,10 +42,14 @@ def main():
                       action="store", type='string', dest="ip")
     parser.add_option("-o", "--hostname",
                       action="store", type='string', dest="hostname")
+    parser.add_option("-p", "--poll_period",
+                      action="store", type='string', dest="period")
+    parser.add_option("-t", "--timeout",
+                      action="store", type='string', dest="timeout")
 
     (options, args) = parser.parse_args()
 
-    return options.username, options.api_key, options.ip, options.region, options.hostname
+    return options.username, options.api_key, options.ip, options.region, options.hostname, options.period, options.timeout
 
 def request(url, auth_token=None, data=None):
     headers = {
@@ -152,7 +156,6 @@ class CloudMonitoring:
         return self.__request("/alarm_examples/%s" % template_name)
 
 
-
 if __name__ == "__main__":
    
     args = main()
@@ -162,6 +165,14 @@ if __name__ == "__main__":
     ip_address = args[2] 
     region = args[3] 
     hostname = args[4] 
+    period = args[5] 
+    timeout = args[6] 
+
+    if not timeout:
+        timeout = 30
+
+    if not period:
+        period = 60
 
     if not hostname:
         hostname = socket.gethostname()
@@ -172,19 +183,26 @@ if __name__ == "__main__":
 
     cm = CloudMonitoring(username, api_key, uk_user)
     entity = cm.get_entity_by_ip(ip_address)
-    template = cm.get_alarm_template("agent.managed_low_filesystem_avail")
 
-    check_id = cm.create_check(entity, {
-        "label": "Root Filesystem",
-        "type": "agent.filesystem",
-        "details": {
-         "target": "/"
-        }
-    })
+    if entity:
+        template = cm.get_alarm_template("agent.managed_low_filesystem_avail")
 
-    alarm_id = cm.create_alarm(entity, {
-        "label": template["label"],
-        "check_id": check_id,
-        "notification_plan_id": "npManaged",
-        "criteria": template["criteria"]
-    })
+        check_id = cm.create_check(entity, {
+            "label": "Filesystem",
+            "type": "agent.filesystem",
+            "details": {
+                "target": "/",
+                "timeout": timeout,
+                "period": period
+            }
+        })
+
+        alarm_id = cm.create_alarm(entity, {
+            "label": template["label"],
+            "check_id": check_id,
+            "notification_plan_id": "npManaged",
+            "criteria": template["criteria"]
+        })
+    else 
+        print "Entity for server " + hostname + " cannot be found."
+

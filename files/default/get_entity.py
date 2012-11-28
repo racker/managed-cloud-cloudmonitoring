@@ -169,4 +169,4 @@ if __name__ == "__main__":
             "agent_id": hostname
             })
     else:
-         print 'Entity not found'
+         print "Entity for server " + hostname + " cannot be found."
