@@ -37,4 +37,6 @@ default['cloud_monitoring']['agent']['id'] = node.hostname
 default['cloud_monitoring']['agent']['channel'] = nil
 default['cloud_monitoring']['agent']['version'] = 'latest'
 default['cloud_monitoring']['agent']['token'] = "ChangeMe"
+default['cloud_monitoring']['agent']['filesystem_period'] = 60
+default['cloud_monitoring']['agent']['filesystem_timeout'] = 30
 default['cloud_monitoring']['monitoring_endpoints'] = [] # This should be a list of strings like 'x.x.x.x:port'
