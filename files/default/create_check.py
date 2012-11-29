@@ -200,6 +200,7 @@ if __name__ == "__main__":
         alarm_id = cm.create_alarm(entity, {
             "label": template["label"],
             "check_id": check_id,
+            "metadata": {"template_name": "agent.managed_low_filesystem_avail"},
             "notification_plan_id": "npManaged",
             "criteria": template["criteria"]
         })
