@@ -203,6 +203,6 @@ if __name__ == "__main__":
             "notification_plan_id": "npManaged",
             "criteria": template["criteria"]
         })
-    else 
+    else: 
         print "Entity for server " + hostname + " cannot be found."
 
