@@ -165,8 +165,13 @@ if __name__ == "__main__":
     entity = cm.get_entity_by_ip(ip_address)
 
     if entity:
-        agent_id = cm.set_agent_id(entity, {
-            "agent_id": hostname
-            })
+        try:
+            agent_id = cm.set_agent_id(entity, {
+                "agent_id": hostname
+                })
+
+        except urllib2.HTTPError, err:
+           if err.code != 400:
+               raise
     else:
          print "Entity for server " + hostname + " cannot be found."
