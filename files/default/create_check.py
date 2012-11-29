@@ -140,8 +140,7 @@ class CloudMonitoring:
                 if entities['ip_addresses'] is not None:
                     for addr in entities['ip_addresses'].values():
                         if addr == ip_address: 
-                            my_entity = entities['id']
-        return my_entity
+                            return entities['id']
 
     def set_agent_id(self, entity_id, data):
         return self.__putrequest("/entities/%s" % entity_id, data)
