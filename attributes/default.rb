@@ -22,13 +22,21 @@ default['cloud_monitoring']['alarms'] = {}
 default['cloud_monitoring']['rackspace_username'] = 'your_rackspace_username'
 default['cloud_monitoring']['rackspace_api_key'] = 'your_rackspace_api_key'
 default['cloud_monitoring']['rackspace_auth_region'] = 'us'
-default['cloud_monitoring']['abort_on_failure'] = true
+default['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
+default['cloud_monitoring']['rackspace_rb_auth_url'] = 'identity.api.rackspacecloud.com'
+default['cloud_monitoring']['abort_on_failure'] = false
 default['cloud_monitoring']['rackspace_service_level'] = "managed" 
 default['cloud_monitoring']['notification_plan'] = "npManaged"
+default['cloud_monitoring']['osver'] = nil
+default['cloud_monitoring']['osarch'] = nil
+default['cloud_monitoring']['datacenter'] = nil
+
 
 default['cloud_monitoring']['agent'] = {}
 default['cloud_monitoring']['agent']['id'] = node.hostname
 default['cloud_monitoring']['agent']['channel'] = nil
 default['cloud_monitoring']['agent']['version'] = 'latest'
 default['cloud_monitoring']['agent']['token'] = "ChangeMe"
+default['cloud_monitoring']['agent']['filesystem_period'] = 60
+default['cloud_monitoring']['agent']['filesystem_timeout'] = 30
 default['cloud_monitoring']['monitoring_endpoints'] = [] # This should be a list of strings like 'x.x.x.x:port'

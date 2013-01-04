@@ -13,7 +13,22 @@ The cookbook also installs the python-pip package in Debian and RedHat based sys
 
 The raxmon-cli recipe in this cookbook is not automatically added by default.  To install raxmon-cli, add the cloud_monitoring::raxmon recipe to the run_list. 
 
+To run this recipe manually from a managed cloud server use the following command:
+
+$ ./mgc.sh --recipe "cloudmonitoring" --json '"cloud_monitoring" : { "bootstrapfile" : "/etc/raxmon/bootstrap.json", "rackspace_username" : "cloudusername", "rackspace_api_key" : "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"}' --force
+
 # Requirements
+
+## Supported OS (Rackspace Managed Cloud)
+
+* RHEL 5.5
+* RHEL 6.1
+* CentOS 5.6
+* CentOS 6.3
+* Ubuntu 10.04
+* Ubuntu 11.04
+* Ubuntu 11.10
+* Ubuntu 12.04
 
 Requires Chef 0.7.10 or higher for Lightweight Resource and Provider support. Chef 0.8+ is recommended. While this
 cookbook can be used in chef-solo mode, to gain the most flexibility, we recommend using chef-client with a Chef Server.
