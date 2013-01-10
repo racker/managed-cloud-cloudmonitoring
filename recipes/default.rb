@@ -51,6 +51,7 @@ else
 
     end
 
+	execute "yum -q clean metadata" # Prevents failures on yum -q makecache due to out-of-date metadata files
     execute "yum -q makecache"
     ruby_block "reload-internal-yum-cache" do
       block do
