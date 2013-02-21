@@ -30,6 +30,7 @@ default['cloud_monitoring']['notification_plan'] = "npManaged"
 default['cloud_monitoring']['osver'] = nil
 default['cloud_monitoring']['osarch'] = nil
 default['cloud_monitoring']['datacenter'] = nil
+default['cloud_monitoring']['status'] = "prod"
 
 
 default['cloud_monitoring']['agent'] = {}
