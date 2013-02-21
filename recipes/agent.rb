@@ -22,13 +22,13 @@ cookbook_file "/var/chef/cache/get_entity.py" do
   source "get_entity.py"
   owner "root"
   group "root"
-  mode "0777"
+  mode "0755"
   action :create
 end
 
 #Get the entity for this server based on IP address and set the agent_id to the hostname
 execute "get_entity" do
-  command "python /var/chef/cache/get_entity.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']} -i #{node.ipaddress}"      
+  command "python /var/chef/cache/get_entity.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']} -i #{node.ipaddress} -o #{node['cloud_monitoring']['agent']['id']}"      
   user "root"
 end
 
@@ -38,11 +38,11 @@ package "rackspace-monitoring-agent" do
   notifies :restart, "service[rackspace-monitoring-agent]"
 end
 
-cookbook_file "/var/chef/cache/create_agent_token24.py" do
-  source "create_agent_token24.py"
+cookbook_file "/var/chef/cache/create_agent_token.py" do
+  source "create_agent_token.py"
   owner "root"
   group "root"
-  mode "0777"
+  mode "0755"
   action :create
 end
 
@@ -60,7 +60,7 @@ end
 
 #Create an agent token and place it in the config file
 execute "create_token" do
-  command "TOKEN=`python /var/chef/cache/create_agent_token24.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']}` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
+  command "TOKEN=`python /var/chef/cache/create_agent_token.py -u #{node['cloud_monitoring']['rackspace_username']} -a #{node['cloud_monitoring']['rackspace_api_key']} -r #{node['cloud_monitoring']['rackspace_auth_region']}` && sed -i \"s/monitoring_token ChangeMe/monitoring_token $TOKEN/g\" /etc/rackspace-monitoring-agent.cfg"      
   user "root"
 end
 
@@ -80,7 +80,7 @@ cookbook_file "/var/chef/cache/create_check.py" do
   source "create_check.py"
   owner "root"
   group "root"
-  mode "0777"
+  mode "0755"
   action :create
 end
 

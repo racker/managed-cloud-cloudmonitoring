@@ -124,12 +124,21 @@ if __name__ == "__main__":
     if region == 'uk':
         uk_user = True
 
-    cm = CloudMonitoring(username, api_key, uk_user)
-    agent_token = cm.get_my_token(hostname)
+    try:
+        cm = CloudMonitoring(username, api_key, uk_user)
+    except urllib2.HTTPError, err:
+        raise
 
+    try: 
+        agent_token = cm.get_my_token(hostname)
+    except urllib2.HTTPError, err:
+        raise
 
     if not agent_token:
-        new_token = cm.create_token({"label": hostname})
+        try:            
+            new_token = cm.create_token({"label": hostname})
+        except urllib2.HTTPError, err:
+            raise
         print new_token
     else:
         print agent_token
