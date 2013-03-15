@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-if File.exists?("/root/.noupdate") 
+if File.exists?("/root/.noupdate") and node['cloud_monitoring']['status'] == "prod"
   Chef::Log.info "The customer does not want the monitoring agent."
 else
 
@@ -51,7 +51,7 @@ else
 
     end
 
-	execute "yum -q clean metadata" # Prevents failures on yum -q makecache due to out-of-date metadata files
+    execute "yum -q clean metadata"  # Prevents failures on yum -q makecache due to out-of-date metadata files
     execute "yum -q makecache"
     ruby_block "reload-internal-yum-cache" do
       block do
@@ -83,45 +83,45 @@ else
   end
 
 
-#Install all our pre-reqs
-case node['platform']
-when "ubuntu","debian"
-  package( "libxslt-dev" ).run_action( :install )
-  package( "libxml2-dev" ).run_action( :install )
+  #Install all our pre-reqs
+  case node['platform']
+  when "ubuntu","debian"
+    package( "libxslt-dev" ).run_action( :install )
+    package( "libxml2-dev" ).run_action( :install )
 
 
-when "redhat","centos","fedora", "amazon","scientific"
-  package( "libxslt-devel" ).run_action( :install )
-  package( "libxml2-devel" ).run_action( :install )
+  when "redhat","centos","fedora", "amazon","scientific"
+    package( "libxslt-devel" ).run_action( :install )
+    package( "libxml2-devel" ).run_action( :install )
 
 
-  major_version = node['platform_version'].split('.').first.to_i
-  if platform_family?('rhel') && major_version < 6
-   package( "python-setuptools" ).run_action( :install )
-   package( "python-simplejson" ).run_action( :install )
+    major_version = node['platform_version'].split('.').first.to_i
+    if platform_family?('rhel') && major_version < 6
+     package( "python-setuptools" ).run_action( :install )
+     package( "python-simplejson" ).run_action( :install )
+    end
   end
-end
 
-if File.exists?('/etc/rackspace/datacenter') and File.readable?('/etc/rackspace/datacenter')
-dc = File.open('/etc/rackspace/datacenter') {|f| f.readline}
-node['cloud_monitoring']['datacenter'] = dc.strip
-Chef::Log.info "Datacenter is: #{node['cloud_monitoring']['datacenter']}"
+  if File.exists?('/etc/rackspace/datacenter') and File.readable?('/etc/rackspace/datacenter')
+  dc = File.open('/etc/rackspace/datacenter') {|f| f.readline}
+  node['cloud_monitoring']['datacenter'] = dc.strip
+  Chef::Log.info "Datacenter is: #{node['cloud_monitoring']['datacenter']}"
 
-case node['cloud_monitoring']['datacenter']
-   when "SAT1", "SAT2", "IAD1", "IAD2", "DFW1", "ORD1"
-      node.set['cloud_monitoring']['rackspace_auth_region'] = 'us'
-      node.set['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
-      node.set['cloud_monitoring']['rackspace_rb_auth_url'] = 'identity.api.rackspacecloud.com'
-      Chef::Log.info "Setting region to: #{node['cloud_monitoring']['rackspace_auth_region']}"
+  case node['cloud_monitoring']['datacenter']
+     when "SAT1", "SAT2", "IAD1", "IAD2", "DFW1", "ORD1"
+        node.set['cloud_monitoring']['rackspace_auth_region'] = 'us'
+        node.set['cloud_monitoring']['rackspace_auth_url'] = 'https://identity.api.rackspacecloud.com/v2.0'
+        node.set['cloud_monitoring']['rackspace_rb_auth_url'] = 'identity.api.rackspacecloud.com'
+        Chef::Log.info "Setting region to: #{node['cloud_monitoring']['rackspace_auth_region']}"
 
-   when "LON3" 
-      node.set['cloud_monitoring']['rackspace_auth_region']  = 'uk'
-      node.set['cloud_monitoring']['rackspace_auth_url'] = 'https://lon.identity.api.rackspacecloud.com/v2.0'
-      node.set['cloud_monitoring']['rackspace_rb_auth_url'] = 'lon.identity.api.rackspacecloud.com'
-      Chef::Log.info "Setting region to: #{node['cloud_monitoring']['rackspace_auth_region']}"
-   end
-end
-  #Calling the other recipes needed for a full install. This could be moved to a role or run_list. 
-  include_recipe "cloudmonitoring::agent"
+     when "LON3" 
+        node.set['cloud_monitoring']['rackspace_auth_region']  = 'uk'
+        node.set['cloud_monitoring']['rackspace_auth_url'] = 'https://lon.identity.api.rackspacecloud.com/v2.0'
+        node.set['cloud_monitoring']['rackspace_rb_auth_url'] = 'lon.identity.api.rackspacecloud.com'
+        Chef::Log.info "Setting region to: #{node['cloud_monitoring']['rackspace_auth_region']}"
+     end
+  end
+    #Calling the other recipes needed for a full install. This could be moved to a role or run_list. 
+    include_recipe "cloudmonitoring::agent"
 
 end
