@@ -189,10 +189,10 @@ if __name__ == "__main__":
         check_id = cm.create_check(entity, {
             "label": "Filesystem",
             "type": "agent.filesystem",
+            "timeout": timeout,
+            "period": period,
             "details": {
-                "target": "/",
-                "timeout": timeout,
-                "period": period
+                "target": "/"
             }
         })
 
